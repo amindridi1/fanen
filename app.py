@@ -1,30 +1,21 @@
 from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO, send
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
+socketio = SocketIO(app)
 
-# In-memory storage for devices
-devices = {}
+# In-memory storage for messages
+messages = []
 
 @app.route('/')
 def index():
-    return render_template('index.html', devices=devices)
+    return render_template('index.html', messages=messages)
 
-@app.route('/add_device', methods=['POST'])
-def add_device():
-    device_name = request.form.get('device_name')
-    if device_name and device_name not in devices:
-        devices[device_name] = {'status': 'off'}
-        return jsonify({'success': True, 'devices': devices})
-    return jsonify({'success': False, 'error': 'Device already exists or invalid name'})
-
-@app.route('/toggle_device/<device_name>', methods=['POST'])
-def toggle_device(device_name):
-    if device_name in devices:
-        current_status = devices[device_name]['status']
-        devices[device_name]['status'] = 'on' if current_status == 'off' else 'off'
-        return jsonify({'success': True, 'devices': devices})
-    return jsonify({'success': False, 'error': 'Device not found'})
+@socketio.on('message')
+def handle_message(msg):
+    messages.append(msg)  # Store the message
+    send(msg, broadcast=True)  # Broadcast the message to all clients
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app)
