@@ -3,31 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <title>Smart Home Control</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Chat Room</h1>
-    <div id="chat">
-        <ul id="messages"></ul>
+    <h1>Smart Home Control</h1>
+    <div>
+        <input id="device_name" placeholder="Enter device name" />
+        <button onclick="addDevice()">Add Device</button>
     </div>
-    <input id="message" autocomplete="off" /><button onclick="sendMessage()">Send</button>
+    <ul id="device_list">
+        <!-- Device list will be populated here -->
+    </ul>
 
     <script>
-        var socket = io();
-
-        socket.on('message', function(msg){
-            var item = document.createElement('li');
-            item.textContent = msg;
-            document.getElementById('messages').appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
-        });
-
-        function sendMessage() {
-            var input = document.getElementById('message');
-            socket.send(input.value);
-            input.value = '';
+        function addDevice() {
+            var deviceName = $('#device_name').val();
+            $.post('/add_device', { device_name: deviceName }, function(data) {
+                if (data.success) {
+                    updateDeviceList(data.devices);
+                } else {
+                    alert(data.error);
+                }
+            });
         }
+
+        function toggleDevice(deviceName) {
+            $.post('/toggle_device/' + deviceName, function(data) {
+                if (data.success) {
+                    updateDeviceList(data.devices);
+                } else {
+                    alert(data.error);
+                }
+            });
+        }
+
+        function updateDeviceList(devices) {
+            var deviceList = $('#device_list');
+            deviceList.empty();
+            for (var name in devices) {
+                var status = devices[name].status;
+                deviceList.append('<li>' + name + ' - ' + status + 
+                                  ' <button onclick="toggleDevice(\'' + name + '\')">Toggle</button></li>');
+            }
+        }
+
+        $(document).ready(function() {
+            updateDeviceList({{ devices|tojson }});
+        });
     </script>
 </body>
 </html>
