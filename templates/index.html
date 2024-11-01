@@ -3,37 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    <script>
-        var socket = io();
-
-        function sendMessage() {
-            var message = document.getElementById("messageInput").value;
-            if (message) {
-                socket.emit('message', { data: message });
-                document.getElementById("messageInput").value = '';
-            }
-        }
-
-        socket.on('message', function(data) {
-            var messages = document.getElementById("messages");
-            messages.innerHTML += "<p>" + data.data + "</p>";
-        });
-
-        socket.on('connect', function() {
-            console.log("Connected to the server.");
-        });
-
-        socket.on('disconnect', function() {
-            console.log("Disconnected from the server.");
-        });
-    </script>
+    <title>Chatroom</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Chat Room</h1>
-    <div id="messages"></div>
-    <input id="messageInput" type="text" placeholder="Type your message...">
-    <button onclick="sendMessage()">Send</button>
+    <h1>Chatroom</h1>
+    <div id="chat-area">
+        <ul id="messages"></ul>
+    </div>
+    <input type="text" id="message-input" placeholder="Enter your message">
+    <button id="send-message">Send</button>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
