@@ -3,25 +3,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Smart Home</title>
+    <title>Web GUI for Python App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Virtual Smart Home</h1>
-    <button id="toggleLight">Toggle Light</button>
-    <p id="status">Light is off</p>
+    <h1>Web-based Interface</h1>
+    <button id="actionButton">Send Action</button>
+    <p id="response">Waiting for server response...</p>
 
     <script>
         const socket = io();
 
-        // Emit toggle_light event when button is clicked
-        document.getElementById('toggleLight').addEventListener('click', () => {
-            socket.emit('toggle_light', { status: 'on' });
+        // Emit event to server when button is clicked
+        document.getElementById('actionButton').addEventListener('click', () => {
+            socket.emit('toggle_event', { action: 'execute' });
         });
 
-        // Listen for light_state events
-        socket.on('light_state', (data) => {
-            document.getElementById('status').textContent = `Light is ${data.status}`;
+        // Listen for the server response and display it
+        socket.on('response_event', (data) => {
+            document.getElementById('response').textContent = `Server Response: ${data.result}`;
         });
     </script>
 </body>
