@@ -4,28 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
     <h1>Chat Room</h1>
+    <div id="chat">
+        <ul id="messages"></ul>
+    </div>
     <input id="message" autocomplete="off" /><button onclick="sendMessage()">Send</button>
-    <ul id="messages"></ul>
 
     <script>
-        const socket = io();
+        var socket = io();
 
-        socket.on('message', function(msg) {
-            const item = document.createElement('li');
+        socket.on('message', function(msg){
+            var item = document.createElement('li');
             item.textContent = msg;
             document.getElementById('messages').appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
         });
 
         function sendMessage() {
-            const message = document.getElementById('message').value;
-            if (message) {
-                socket.send(message);
-                document.getElementById('message').value = '';
-            }
+            var input = document.getElementById('message');
+            socket.send(input.value);
+            input.value = '';
         }
     </script>
 </body>
