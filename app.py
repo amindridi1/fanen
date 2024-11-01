@@ -1,21 +1,18 @@
-# app.py
 from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app)
 
-# Route for the main page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Socket event for toggling lights
-@socketio.on('toggle_light')
-def handle_toggle_light(data):
-    # Broadcast the light state to all clients
-    emit('light_state', data, broadcast=True)
+@socketio.on('toggle_event')
+def handle_toggle_event(data):
+    # Backend processing logic
+    response = data.get('action', 'default')
+    socketio.emit('response_event', {'result': response})
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=5000)
