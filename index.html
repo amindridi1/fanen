@@ -1,0 +1,28 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Virtual Smart Home</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Virtual Smart Home</h1>
+    <button id="toggleLight">Toggle Light</button>
+    <p id="status">Light is off</p>
+
+    <script>
+        const socket = io();
+
+        // Emit toggle_light event when button is clicked
+        document.getElementById('toggleLight').addEventListener('click', () => {
+            socket.emit('toggle_light', { status: 'on' });
+        });
+
+        // Listen for light_state events
+        socket.on('light_state', (data) => {
+            document.getElementById('status').textContent = `Light is ${data.status}`;
+        });
+    </script>
+</body>
+</html>
